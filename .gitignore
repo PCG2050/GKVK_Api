@@ -1,0 +1,32 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.log
+*.pdb
+*.obj
+*.ncb
+*.opensdf
+*.sdf
+*.bak
+*.dll
+*.exe
+[Bb]in/
+[Oo]bj/
+
+# Package Manager
+packages/
+*.nupkg
+
+# Rider
+.idea/
+
+# ReSharper
+*.resharper
+*.dotSettings
+
+# Mac
+.DS_Store
+
+# OS generated files
+.localized
