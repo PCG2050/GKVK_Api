@@ -1,0 +1,483 @@
+2025-06-11 11:46:55.955 +05:30 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 11:46:56.036 +05:30 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 11:50:55.892 +05:30 [INF] Executed DbCommand (24ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 11:50:55.987 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 11:55:16.808 +05:30 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 11:55:16.895 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-11 11:55:16.973 +05:30 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-11 11:55:17.086 +05:30 [INF] Executed DbCommand (41ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-11 11:55:17.098 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 11:55:17.100 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 11:55:17.129 +05:30 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 11:55:17.140 +05:30 [INF] Applying migration '20250611062459_InitialMigration'.
+2025-06-11 11:55:17.187 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Units] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [ParentUnitId] int NULL,
+    CONSTRAINT [PK_Units] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Units_Units_ParentUnitId] FOREIGN KEY ([ParentUnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION
+);
+2025-06-11 11:55:17.193 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NOT NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] nvarchar(max) NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-11 11:55:17.221 +05:30 [ERR] Failed executing DbCommand (27ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [SubUnits] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [UnitId] int NOT NULL,
+    [ParentSubUnitId] int NULL,
+    CONSTRAINT [PK_SubUnits] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_SubUnits_SubUnits_ParentSubUnitId] FOREIGN KEY ([ParentSubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_SubUnits_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id]) ON DELETE CASCADE
+);
+2025-06-11 12:00:15.372 +05:30 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 12:00:15.460 +05:30 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 12:00:15.491 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 12:00:30.029 +05:30 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 12:00:30.094 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-11 12:00:30.139 +05:30 [INF] Executed DbCommand (41ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-11 12:00:30.264 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-11 12:00:30.289 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 12:00:30.290 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 12:00:30.300 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 12:00:30.315 +05:30 [INF] Applying migration '20250611063022_InitialMigration'.
+2025-06-11 12:00:30.405 +05:30 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Units] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [ParentUnitId] int NULL,
+    CONSTRAINT [PK_Units] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Units_Units_ParentUnitId] FOREIGN KEY ([ParentUnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION
+);
+2025-06-11 12:00:30.414 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NOT NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] nvarchar(max) NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-11 12:00:30.425 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [SubUnits] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [UnitId] int NOT NULL,
+    [ParentSubUnitId] int NULL,
+    CONSTRAINT [PK_SubUnits] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_SubUnits_SubUnits_ParentSubUnitId] FOREIGN KEY ([ParentSubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_SubUnits_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id]) ON DELETE CASCADE
+);
+2025-06-11 12:00:30.439 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshTokens] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [Token] nvarchar(max) NOT NULL,
+    [ExpiryDate] datetime2 NOT NULL,
+    [IsRevoked] bit NOT NULL,
+    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_RefreshTokens_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-11 12:00:30.450 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainerUnitAssignments] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [UnitId] int NOT NULL,
+    [SubUnitId] int NULL,
+    CONSTRAINT [PK_TrainerUnitAssignments] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_TrainerUnitAssignments_SubUnits_SubUnitId] FOREIGN KEY ([SubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TrainerUnitAssignments_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TrainerUnitAssignments_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-11 12:00:30.465 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainingSessions] (
+    [Id] int NOT NULL IDENTITY,
+    [UnitId] int NOT NULL,
+    [SubUnitId] int NULL,
+    [Date] datetime2 NOT NULL,
+    [JsonData] nvarchar(max) NOT NULL,
+    [CreatedByUserId] int NOT NULL,
+    CONSTRAINT [PK_TrainingSessions] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_TrainingSessions_SubUnits_SubUnitId] FOREIGN KEY ([SubUnitId]) REFERENCES [SubUnits] ([Id]),
+    CONSTRAINT [FK_TrainingSessions_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainingSessions_Users_CreatedByUserId] FOREIGN KEY ([CreatedByUserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-11 12:00:30.483 +05:30 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_RefreshTokens_UserId] ON [RefreshTokens] ([UserId]);
+2025-06-11 12:00:30.486 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_SubUnits_ParentSubUnitId] ON [SubUnits] ([ParentSubUnitId]);
+2025-06-11 12:00:30.497 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_SubUnits_UnitId] ON [SubUnits] ([UnitId]);
+2025-06-11 12:00:30.500 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_SubUnitId] ON [TrainerUnitAssignments] ([SubUnitId]);
+2025-06-11 12:00:30.511 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_UnitId] ON [TrainerUnitAssignments] ([UnitId]);
+2025-06-11 12:00:30.515 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_UserId] ON [TrainerUnitAssignments] ([UserId]);
+2025-06-11 12:00:30.520 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_CreatedByUserId] ON [TrainingSessions] ([CreatedByUserId]);
+2025-06-11 12:00:30.553 +05:30 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_SubUnitId] ON [TrainingSessions] ([SubUnitId]);
+2025-06-11 12:00:30.584 +05:30 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_UnitId] ON [TrainingSessions] ([UnitId]);
+2025-06-11 12:00:30.613 +05:30 [INF] Executed DbCommand (28ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Units_ParentUnitId] ON [Units] ([ParentUnitId]);
+2025-06-11 12:00:30.666 +05:30 [INF] Executed DbCommand (52ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250611063022_InitialMigration', N'9.0.5');
+2025-06-11 12:00:30.678 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2025-06-11 12:50:52.831 +05:30 [INF] Executed DbCommand (546ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+CREATE DATABASE [GKVK_DB];
+2025-06-11 12:50:53.044 +05:30 [INF] Executed DbCommand (135ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+IF SERVERPROPERTY('EngineEdition') <> 5
+BEGIN
+    ALTER DATABASE [GKVK_DB] SET READ_COMMITTED_SNAPSHOT ON;
+END;
+2025-06-11 12:50:53.076 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 12:50:53.082 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-11 12:50:53.131 +05:30 [INF] Executed DbCommand (46ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-11 12:50:53.213 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-11 12:50:53.221 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 12:50:53.224 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 12:50:53.242 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 12:50:53.252 +05:30 [INF] Applying migration '20250611072034_InitialMigration'.
+2025-06-11 12:50:53.302 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Units] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [FK_ParentUnitId] int NULL,
+    CONSTRAINT [PK_Units] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Units_Units_FK_ParentUnitId] FOREIGN KEY ([FK_ParentUnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION
+);
+2025-06-11 12:50:53.305 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NOT NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] nvarchar(max) NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-11 12:50:53.324 +05:30 [ERR] Failed executing DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [SubUnits] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [UnitId] int NOT NULL,
+    [ParentSubUnitId] int NULL,
+    CONSTRAINT [PK_SubUnits] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_SubUnits_SubUnits_ParentSubUnitId] FOREIGN KEY ([ParentSubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_SubUnits_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id]) ON DELETE CASCADE
+);
+2025-06-11 13:09:36.768 +05:30 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 13:09:36.895 +05:30 [INF] Executed DbCommand (31ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 13:09:36.964 +05:30 [INF] Executed DbCommand (48ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 13:10:11.557 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 13:10:11.604 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-11 13:10:11.654 +05:30 [INF] Executed DbCommand (46ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-11 13:10:11.748 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-11 13:10:11.761 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 13:10:11.763 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 13:10:11.774 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 13:10:11.790 +05:30 [INF] Applying migration '20250611073948_InitialMigration'.
+2025-06-11 13:10:11.945 +05:30 [INF] Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Units] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [FK_ParentUnitId] int NULL,
+    CONSTRAINT [PK_Units] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Units_Units_FK_ParentUnitId] FOREIGN KEY ([FK_ParentUnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION
+);
+2025-06-11 13:10:11.956 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NOT NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] nvarchar(max) NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-11 13:10:11.998 +05:30 [ERR] Failed executing DbCommand (39ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [SubUnits] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [UnitId] int NOT NULL,
+    [ParentSubUnitId] int NULL,
+    CONSTRAINT [PK_SubUnits] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_SubUnits_SubUnits_ParentSubUnitId] FOREIGN KEY ([ParentSubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_SubUnits_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id])
+);
+2025-06-11 14:09:26.018 +05:30 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 14:09:26.110 +05:30 [INF] Executed DbCommand (24ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 14:09:26.154 +05:30 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 14:10:18.529 +05:30 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 14:10:18.604 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-11 14:10:18.663 +05:30 [INF] Executed DbCommand (55ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-11 14:10:18.779 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-11 14:10:18.797 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-11 14:10:18.798 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-11 14:10:18.867 +05:30 [INF] Executed DbCommand (66ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-11 14:10:18.883 +05:30 [INF] Applying migration '20250611084000_RemoveCascadeConflict'.
+2025-06-11 14:10:20.037 +05:30 [INF] Executed DbCommand (1,118ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Units] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [FK_ParentUnitId] int NULL,
+    CONSTRAINT [PK_Units] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Units_Units_FK_ParentUnitId] FOREIGN KEY ([FK_ParentUnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION
+);
+2025-06-11 14:10:20.044 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NOT NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] nvarchar(max) NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-11 14:10:20.053 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [SubUnits] (
+    [Id] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [UnitId] int NOT NULL,
+    [ParentSubUnitId] int NULL,
+    CONSTRAINT [PK_SubUnits] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_SubUnits_SubUnits_ParentSubUnitId] FOREIGN KEY ([ParentSubUnitId]) REFERENCES [SubUnits] ([Id]),
+    CONSTRAINT [FK_SubUnits_Units_UnitId] FOREIGN KEY ([UnitId]) REFERENCES [Units] ([Id])
+);
+2025-06-11 14:10:20.060 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshTokens] (
+    [Id] int NOT NULL IDENTITY,
+    [FK_UserId] int NOT NULL,
+    [Token] nvarchar(max) NOT NULL,
+    [ExpiryDate] datetime2 NOT NULL,
+    [IsRevoked] bit NOT NULL,
+    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_RefreshTokens_Users_FK_UserId] FOREIGN KEY ([FK_UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-11 14:10:20.065 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainerUnitAssignments] (
+    [Id] int NOT NULL IDENTITY,
+    [FK_UserId] int NOT NULL,
+    [FK_UnitId] int NOT NULL,
+    [FK_SubUnitId] int NULL,
+    CONSTRAINT [PK_TrainerUnitAssignments] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_TrainerUnitAssignments_SubUnits_FK_SubUnitId] FOREIGN KEY ([FK_SubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TrainerUnitAssignments_Units_FK_UnitId] FOREIGN KEY ([FK_UnitId]) REFERENCES [Units] ([Id]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TrainerUnitAssignments_Users_FK_UserId] FOREIGN KEY ([FK_UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-11 14:10:20.084 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainingSessions] (
+    [SessionId] int NOT NULL IDENTITY,
+    [FK_UnitId] int NOT NULL,
+    [FK_SubUnitId] int NULL,
+    [SubUnitId] int NOT NULL,
+    [Date] datetime2 NOT NULL,
+    [JsonData] nvarchar(max) NOT NULL,
+    [FK_CreatedByUserId] int NOT NULL,
+    CONSTRAINT [PK_TrainingSessions] PRIMARY KEY ([SessionId]),
+    CONSTRAINT [FK_TrainingSessions_SubUnits_SubUnitId] FOREIGN KEY ([SubUnitId]) REFERENCES [SubUnits] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainingSessions_Units_FK_UnitId] FOREIGN KEY ([FK_UnitId]) REFERENCES [Units] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainingSessions_Users_FK_CreatedByUserId] FOREIGN KEY ([FK_CreatedByUserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-11 14:10:20.100 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_RefreshTokens_FK_UserId] ON [RefreshTokens] ([FK_UserId]);
+2025-06-11 14:10:20.104 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_SubUnits_ParentSubUnitId] ON [SubUnits] ([ParentSubUnitId]);
+2025-06-11 14:10:20.108 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_SubUnits_UnitId] ON [SubUnits] ([UnitId]);
+2025-06-11 14:10:20.110 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_FK_SubUnitId] ON [TrainerUnitAssignments] ([FK_SubUnitId]);
+2025-06-11 14:10:20.129 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_FK_UnitId] ON [TrainerUnitAssignments] ([FK_UnitId]);
+2025-06-11 14:10:20.133 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_FK_UserId] ON [TrainerUnitAssignments] ([FK_UserId]);
+2025-06-11 14:10:20.139 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_FK_CreatedByUserId] ON [TrainingSessions] ([FK_CreatedByUserId]);
+2025-06-11 14:10:20.142 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_FK_UnitId] ON [TrainingSessions] ([FK_UnitId]);
+2025-06-11 14:10:20.145 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_SubUnitId] ON [TrainingSessions] ([SubUnitId]);
+2025-06-11 14:10:20.150 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Units_FK_ParentUnitId] ON [Units] ([FK_ParentUnitId]);
+2025-06-11 14:10:20.176 +05:30 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250611084000_RemoveCascadeConflict', N'9.0.5');
+2025-06-11 14:10:20.256 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2025-06-11 14:14:14.083 +05:30 [INF] User profile is available. Using 'C:\Users\prith\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:14:14.355 +05:30 [WRN] The WebRootPath was not found: C:\Users\prith\source\GKVK_Api\wwwroot. Static files may be unavailable.
+2025-06-11 14:14:14.652 +05:30 [INF] Now listening on: https://localhost:7034
+2025-06-11 14:14:14.653 +05:30 [INF] Now listening on: http://localhost:5242
+2025-06-11 14:14:14.747 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:14:14.748 +05:30 [INF] Hosting environment: Development
+2025-06-11 14:14:14.748 +05:30 [INF] Content root path: C:\Users\prith\source\GKVK_Api
+2025-06-11 14:14:58.082 +05:30 [INF] User profile is available. Using 'C:\Users\prith\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-06-11 14:14:58.361 +05:30 [WRN] The WebRootPath was not found: C:\Users\prith\source\GKVK_Api\wwwroot. Static files may be unavailable.
+2025-06-11 14:14:58.597 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/ - null null
+2025-06-11 14:14:58.710 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2025-06-11 14:14:58.711 +05:30 [INF] Hosting environment: Development
+2025-06-11 14:14:58.711 +05:30 [INF] Content root path: C:\Users\prith\source\GKVK_Api
+2025-06-11 14:14:59.047 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/index.html - null null
+2025-06-11 14:14:59.063 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/ - 301 null null 474.1328ms
+2025-06-11 14:14:59.207 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/index.html - 200 null text/html;charset=utf-8 132.2003ms
+2025-06-11 14:14:59.353 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/swagger-ui.css - null null
+2025-06-11 14:14:59.410 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/index.css - null null
+2025-06-11 14:14:59.410 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/swagger-ui-bundle.js - null null
+2025-06-11 14:14:59.416 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/_framework/aspnetcore-browser-refresh.js - null null
+2025-06-11 14:14:59.454 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/swagger-ui-standalone-preset.js - null null
+2025-06-11 14:14:59.486 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/index.js - null null
+2025-06-11 14:14:59.490 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/index.js - 200 null application/javascript;charset=utf-8 3.7767ms
+2025-06-11 14:14:59.494 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/_framework/aspnetcore-browser-refresh.js - 200 16501 application/javascript; charset=utf-8 80.3526ms
+2025-06-11 14:14:59.503 +05:30 [INF] Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2025-06-11 14:14:59.504 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/index.css - 200 202 text/css 140.6399ms
+2025-06-11 14:14:59.514 +05:30 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2025-06-11 14:14:59.515 +05:30 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2025-06-11 14:14:59.519 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/swagger-ui.css - 200 154949 text/css 165.2639ms
+2025-06-11 14:14:59.523 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/swagger-ui-standalone-preset.js - 200 229223 text/javascript 97.9686ms
+2025-06-11 14:14:59.549 +05:30 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2025-06-11 14:14:59.585 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/swagger-ui-bundle.js - 200 1484234 text/javascript 174.9869ms
+2025-06-11 14:15:00.007 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/_vs/browserLink - null null
+2025-06-11 14:15:00.224 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/_vs/browserLink - 200 null text/javascript; charset=UTF-8 216.1123ms
+2025-06-11 14:15:01.646 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/swagger/v1/swagger.json - null null
+2025-06-11 14:15:01.678 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 31.5715ms
+2025-06-11 14:15:01.754 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/favicon-32x32.png - null null
+2025-06-11 14:15:01.757 +05:30 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2025-06-11 14:15:01.759 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/favicon-32x32.png - 200 628 image/png 5.3366ms
+2025-06-11 14:15:16.727 +05:30 [INF] Request starting HTTP/2 GET https://localhost:44317/WeatherForecast - null null
+2025-06-11 14:15:16.939 +05:30 [INF] Executing endpoint 'GKVK_Api.Controllers.WeatherForecastController.Get (GKVK_Api)'
+2025-06-11 14:15:16.969 +05:30 [INF] Route matched with {action = "Get", controller = "WeatherForecast"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[GKVK_Api.WeatherForecast] Get() on controller GKVK_Api.Controllers.WeatherForecastController (GKVK_Api).
+2025-06-11 14:15:16.986 +05:30 [INF] Executing ObjectResult, writing value of type 'GKVK_Api.WeatherForecast[]'.
+2025-06-11 14:15:17.034 +05:30 [INF] Executed action GKVK_Api.Controllers.WeatherForecastController.Get (GKVK_Api) in 57.2997ms
+2025-06-11 14:15:17.034 +05:30 [INF] Executed endpoint 'GKVK_Api.Controllers.WeatherForecastController.Get (GKVK_Api)'
+2025-06-11 14:15:17.035 +05:30 [INF] Request finished HTTP/2 GET https://localhost:44317/WeatherForecast - 200 null application/json; charset=utf-8 307.5607ms

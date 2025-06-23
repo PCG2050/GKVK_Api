@@ -1,0 +1,714 @@
+2025-06-17 12:31:36.826 +05:30 [INF] Executed DbCommand (304ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+CREATE DATABASE [GKVK_DB];
+2025-06-17 12:31:37.008 +05:30 [INF] Executed DbCommand (134ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+IF SERVERPROPERTY('EngineEdition') <> 5
+BEGIN
+    ALTER DATABASE [GKVK_DB] SET READ_COMMITTED_SNAPSHOT ON;
+END;
+2025-06-17 12:31:37.037 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 12:31:37.041 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-17 12:31:37.102 +05:30 [INF] Executed DbCommand (57ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-17 12:31:37.198 +05:30 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-17 12:31:37.218 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 12:31:37.221 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-17 12:31:37.246 +05:30 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-17 12:31:37.266 +05:30 [INF] Applying migration '20250617070121_Initial_Migration'.
+2025-06-17 12:31:37.350 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrgUnits] (
+    [OrgUnitId] int NOT NULL IDENTITY,
+    [Name] nvarchar(200) NOT NULL,
+    [ParentId] int NULL,
+    [TemplateSourceId] int NULL,
+    CONSTRAINT [PK_OrgUnits] PRIMARY KEY ([OrgUnitId]),
+    CONSTRAINT [FK_OrgUnits_OrgUnits_ParentId] FOREIGN KEY ([ParentId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrgUnits_OrgUnits_TemplateSourceId] FOREIGN KEY ([TemplateSourceId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION
+);
+2025-06-17 12:31:37.355 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(150) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-17 12:31:37.362 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDefinitions] (
+    [TableDefinitionId] int NOT NULL IDENTITY,
+    [Title] nvarchar(max) NOT NULL,
+    [DisplayOrder] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    CONSTRAINT [PK_TableDefinitions] PRIMARY KEY ([TableDefinitionId]),
+    CONSTRAINT [FK_TableDefinitions_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE
+);
+2025-06-17 12:31:37.366 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshTokens] (
+    [RefreshTokenId] int NOT NULL IDENTITY,
+    [FK_UserId] int NOT NULL,
+    [Token] nvarchar(max) NOT NULL,
+    [ExpiryDate] datetime2 NOT NULL,
+    [IsRevoked] bit NOT NULL,
+    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([RefreshTokenId]),
+    CONSTRAINT [FK_RefreshTokens_Users_FK_UserId] FOREIGN KEY ([FK_UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 12:31:37.372 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainerUnitAssignments] (
+    [TrainerUnitAssignmentId] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [AssignedOn] datetime2 NOT NULL,
+    [UnassignedOn] datetime2 NULL,
+    CONSTRAINT [PK_TrainerUnitAssignments] PRIMARY KEY ([TrainerUnitAssignmentId]),
+    CONSTRAINT [FK_TrainerUnitAssignments_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainerUnitAssignments_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 12:31:37.379 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableColumns] (
+    [TableColumnId] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [DataType] int NOT NULL,
+    [Position] int NOT NULL,
+    [TableDefinitionId] int NOT NULL,
+    CONSTRAINT [PK_TableColumns] PRIMARY KEY ([TableColumnId]),
+    CONSTRAINT [FK_TableColumns_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE
+);
+2025-06-17 12:31:37.384 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainingSessions] (
+    [TrainingSessionId] int NOT NULL IDENTITY,
+    [TableDefinitionId] int NOT NULL,
+    [UserId] int NOT NULL,
+    [JsonData] nvarchar(max) NOT NULL,
+    [UploadedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_TrainingSessions] PRIMARY KEY ([TrainingSessionId]),
+    CONSTRAINT [FK_TrainingSessions_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainingSessions_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 12:31:37.434 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrgUnits_ParentId] ON [OrgUnits] ([ParentId]);
+2025-06-17 12:31:37.436 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrgUnits_TemplateSourceId] ON [OrgUnits] ([TemplateSourceId]);
+2025-06-17 12:31:37.439 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_RefreshTokens_FK_UserId] ON [RefreshTokens] ([FK_UserId]);
+2025-06-17 12:31:37.442 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableColumns_TableDefinitionId] ON [TableColumns] ([TableDefinitionId]);
+2025-06-17 12:31:37.445 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDefinitions_OrgUnitId] ON [TableDefinitions] ([OrgUnitId]);
+2025-06-17 12:31:37.449 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Assignment_Active] ON [TrainerUnitAssignments] ([UserId], [OrgUnitId], [UnassignedOn]);
+2025-06-17 12:31:37.475 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_OrgUnitId] ON [TrainerUnitAssignments] ([OrgUnitId]);
+2025-06-17 12:31:37.478 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_TableDefinitionId] ON [TrainingSessions] ([TableDefinitionId]);
+2025-06-17 12:31:37.482 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainingSessions_UserId] ON [TrainingSessions] ([UserId]);
+2025-06-17 12:31:37.497 +05:30 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250617070121_Initial_Migration', N'9.0.5');
+2025-06-17 12:31:37.507 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2025-06-17 17:53:46.741 +05:30 [INF] Executed DbCommand (458ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+CREATE DATABASE [GKVK_DB];
+2025-06-17 17:53:46.898 +05:30 [INF] Executed DbCommand (90ms) [Parameters=[], CommandType='"Text"', CommandTimeout='60']
+IF SERVERPROPERTY('EngineEdition') <> 5
+BEGIN
+    ALTER DATABASE [GKVK_DB] SET READ_COMMITTED_SNAPSHOT ON;
+END;
+2025-06-17 17:53:46.929 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 17:53:46.934 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-17 17:53:46.975 +05:30 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-17 17:53:47.058 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-17 17:53:47.071 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 17:53:47.073 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-17 17:53:47.102 +05:30 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-17 17:53:47.121 +05:30 [INF] Applying migration '20250617122330_Initial_Migration'.
+2025-06-17 17:53:47.251 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrgUnits] (
+    [OrgUnitId] int NOT NULL IDENTITY,
+    [Name] nvarchar(200) NOT NULL,
+    [ParentId] int NULL,
+    [TemplateSourceId] int NULL,
+    CONSTRAINT [PK_OrgUnits] PRIMARY KEY ([OrgUnitId]),
+    CONSTRAINT [FK_OrgUnits_OrgUnits_ParentId] FOREIGN KEY ([ParentId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrgUnits_OrgUnits_TemplateSourceId] FOREIGN KEY ([TemplateSourceId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION
+);
+2025-06-17 17:53:47.256 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(150) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-17 17:53:47.260 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDefinitions] (
+    [TableDefinitionId] int NOT NULL IDENTITY,
+    [Title] nvarchar(max) NOT NULL,
+    [DisplayOrder] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    CONSTRAINT [PK_TableDefinitions] PRIMARY KEY ([TableDefinitionId]),
+    CONSTRAINT [FK_TableDefinitions_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE
+);
+2025-06-17 17:53:47.264 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshTokens] (
+    [RefreshTokenId] int NOT NULL IDENTITY,
+    [FK_UserId] int NOT NULL,
+    [Token] nvarchar(max) NOT NULL,
+    [ExpiryDate] datetime2 NOT NULL,
+    [IsRevoked] bit NOT NULL,
+    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([RefreshTokenId]),
+    CONSTRAINT [FK_RefreshTokens_Users_FK_UserId] FOREIGN KEY ([FK_UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 17:53:47.270 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainerUnitAssignments] (
+    [TrainerUnitAssignmentId] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [AssignedOn] datetime2 NOT NULL,
+    [UnassignedOn] datetime2 NULL,
+    CONSTRAINT [PK_TrainerUnitAssignments] PRIMARY KEY ([TrainerUnitAssignmentId]),
+    CONSTRAINT [FK_TrainerUnitAssignments_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainerUnitAssignments_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 17:53:47.274 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableColumns] (
+    [TableColumnId] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [DataType] int NOT NULL,
+    [Position] int NOT NULL,
+    [TableDefinitionId] int NOT NULL,
+    CONSTRAINT [PK_TableColumns] PRIMARY KEY ([TableColumnId]),
+    CONSTRAINT [FK_TableColumns_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE
+);
+2025-06-17 17:53:47.293 +05:30 [ERR] Failed executing DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDataRows] (
+    [TableDataRowId] int NOT NULL IDENTITY,
+    [TableDefinitionId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [TrainerId] int NOT NULL,
+    [UploadedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_TableDataRows] PRIMARY KEY ([TableDataRowId]),
+    CONSTRAINT [FK_TableDataRows_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableDataRows_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableDataRows_Users_TrainerId] FOREIGN KEY ([TrainerId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 17:57:39.398 +05:30 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 17:57:39.476 +05:30 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-17 17:57:39.519 +05:30 [INF] Executed DbCommand (28ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-17 17:58:14.250 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 17:58:14.301 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-17 17:58:14.353 +05:30 [INF] Executed DbCommand (49ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-17 17:58:14.461 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-17 17:58:14.473 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 17:58:14.474 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-17 17:58:14.482 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-17 17:58:14.495 +05:30 [INF] Applying migration '20250617122800_Inital_Migration'.
+2025-06-17 17:58:14.617 +05:30 [INF] Executed DbCommand (44ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrgUnits] (
+    [OrgUnitId] int NOT NULL IDENTITY,
+    [Name] nvarchar(200) NOT NULL,
+    [ParentId] int NULL,
+    [TemplateSourceId] int NULL,
+    CONSTRAINT [PK_OrgUnits] PRIMARY KEY ([OrgUnitId]),
+    CONSTRAINT [FK_OrgUnits_OrgUnits_ParentId] FOREIGN KEY ([ParentId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrgUnits_OrgUnits_TemplateSourceId] FOREIGN KEY ([TemplateSourceId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION
+);
+2025-06-17 17:58:14.624 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(150) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-17 17:58:14.630 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDefinitions] (
+    [TableDefinitionId] int NOT NULL IDENTITY,
+    [Title] nvarchar(max) NOT NULL,
+    [DisplayOrder] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    CONSTRAINT [PK_TableDefinitions] PRIMARY KEY ([TableDefinitionId]),
+    CONSTRAINT [FK_TableDefinitions_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE
+);
+2025-06-17 17:58:14.637 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshTokens] (
+    [RefreshTokenId] int NOT NULL IDENTITY,
+    [FK_UserId] int NOT NULL,
+    [Token] nvarchar(max) NOT NULL,
+    [ExpiryDate] datetime2 NOT NULL,
+    [IsRevoked] bit NOT NULL,
+    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([RefreshTokenId]),
+    CONSTRAINT [FK_RefreshTokens_Users_FK_UserId] FOREIGN KEY ([FK_UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 17:58:14.644 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainerUnitAssignments] (
+    [TrainerUnitAssignmentId] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [AssignedOn] datetime2 NOT NULL,
+    [UnassignedOn] datetime2 NULL,
+    CONSTRAINT [PK_TrainerUnitAssignments] PRIMARY KEY ([TrainerUnitAssignmentId]),
+    CONSTRAINT [FK_TrainerUnitAssignments_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainerUnitAssignments_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 17:58:14.649 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableColumns] (
+    [TableColumnId] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [DataType] int NOT NULL,
+    [Position] int NOT NULL,
+    [TableDefinitionId] int NOT NULL,
+    CONSTRAINT [PK_TableColumns] PRIMARY KEY ([TableColumnId]),
+    CONSTRAINT [FK_TableColumns_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE
+);
+2025-06-17 17:58:14.705 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDataRows] (
+    [TableDataRowId] int NOT NULL IDENTITY,
+    [TableDefinitionId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [TrainerId] int NOT NULL,
+    [UploadedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_TableDataRows] PRIMARY KEY ([TableDataRowId]),
+    CONSTRAINT [FK_TableDataRows_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TableDataRows_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableDataRows_Users_TrainerId] FOREIGN KEY ([TrainerId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 17:58:14.755 +05:30 [ERR] Failed executing DbCommand (48ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDataCells] (
+    [TableDataCellId] int NOT NULL IDENTITY,
+    [TableDataRowId] int NOT NULL,
+    [TableColumnId] int NOT NULL,
+    [Value] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_TableDataCells] PRIMARY KEY ([TableDataCellId]),
+    CONSTRAINT [FK_TableDataCells_TableColumns_TableColumnId] FOREIGN KEY ([TableColumnId]) REFERENCES [TableColumns] ([TableColumnId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableDataCells_TableDataRows_TableDataRowId] FOREIGN KEY ([TableDataRowId]) REFERENCES [TableDataRows] ([TableDataRowId]) ON DELETE CASCADE
+);
+2025-06-17 18:01:21.207 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 18:01:21.283 +05:30 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-17 18:01:21.304 +05:30 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-17 18:01:47.043 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 18:01:47.092 +05:30 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2025-06-17 18:01:47.115 +05:30 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2025-06-17 18:01:47.182 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2025-06-17 18:01:47.192 +05:30 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2025-06-17 18:01:47.193 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2025-06-17 18:01:47.201 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2025-06-17 18:01:47.211 +05:30 [INF] Applying migration '20250617123134_Inital'.
+2025-06-17 18:01:47.358 +05:30 [INF] Executed DbCommand (38ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [OrgUnits] (
+    [OrgUnitId] int NOT NULL IDENTITY,
+    [Name] nvarchar(200) NOT NULL,
+    [ParentId] int NULL,
+    [TemplateSourceId] int NULL,
+    CONSTRAINT [PK_OrgUnits] PRIMARY KEY ([OrgUnitId]),
+    CONSTRAINT [FK_OrgUnits_OrgUnits_ParentId] FOREIGN KEY ([ParentId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_OrgUnits_OrgUnits_TemplateSourceId] FOREIGN KEY ([TemplateSourceId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION
+);
+2025-06-17 18:01:47.364 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Users] (
+    [UserId] int NOT NULL IDENTITY,
+    [FullName] nvarchar(150) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [PhoneNumber] nvarchar(max) NULL,
+    [PasswordHash] nvarchar(max) NOT NULL,
+    [Role] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [LastUpdatedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_Users] PRIMARY KEY ([UserId])
+);
+2025-06-17 18:01:47.386 +05:30 [INF] Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDefinitions] (
+    [TableDefinitionId] int NOT NULL IDENTITY,
+    [Title] nvarchar(max) NOT NULL,
+    [DisplayOrder] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    CONSTRAINT [PK_TableDefinitions] PRIMARY KEY ([TableDefinitionId]),
+    CONSTRAINT [FK_TableDefinitions_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE
+);
+2025-06-17 18:01:47.398 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [RefreshTokens] (
+    [RefreshTokenId] int NOT NULL IDENTITY,
+    [FK_UserId] int NOT NULL,
+    [Token] nvarchar(max) NOT NULL,
+    [ExpiryDate] datetime2 NOT NULL,
+    [IsRevoked] bit NOT NULL,
+    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY ([RefreshTokenId]),
+    CONSTRAINT [FK_RefreshTokens_Users_FK_UserId] FOREIGN KEY ([FK_UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 18:01:47.407 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TrainerUnitAssignments] (
+    [TrainerUnitAssignmentId] int NOT NULL IDENTITY,
+    [UserId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [AssignedOn] datetime2 NOT NULL,
+    [UnassignedOn] datetime2 NULL,
+    CONSTRAINT [PK_TrainerUnitAssignments] PRIMARY KEY ([TrainerUnitAssignmentId]),
+    CONSTRAINT [FK_TrainerUnitAssignments_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TrainerUnitAssignments_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 18:01:47.427 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableColumns] (
+    [TableColumnId] int NOT NULL IDENTITY,
+    [Name] nvarchar(max) NOT NULL,
+    [DataType] int NOT NULL,
+    [Position] int NOT NULL,
+    [TableDefinitionId] int NOT NULL,
+    CONSTRAINT [PK_TableColumns] PRIMARY KEY ([TableColumnId]),
+    CONSTRAINT [FK_TableColumns_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE
+);
+2025-06-17 18:01:47.437 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDataRows] (
+    [TableDataRowId] int NOT NULL IDENTITY,
+    [TableDefinitionId] int NOT NULL,
+    [OrgUnitId] int NOT NULL,
+    [TrainerId] int NOT NULL,
+    [UploadedAt] datetime2 NOT NULL,
+    CONSTRAINT [PK_TableDataRows] PRIMARY KEY ([TableDataRowId]),
+    CONSTRAINT [FK_TableDataRows_OrgUnits_OrgUnitId] FOREIGN KEY ([OrgUnitId]) REFERENCES [OrgUnits] ([OrgUnitId]) ON DELETE NO ACTION,
+    CONSTRAINT [FK_TableDataRows_TableDefinitions_TableDefinitionId] FOREIGN KEY ([TableDefinitionId]) REFERENCES [TableDefinitions] ([TableDefinitionId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableDataRows_Users_TrainerId] FOREIGN KEY ([TrainerId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+);
+2025-06-17 18:01:47.445 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TableDataCells] (
+    [TableDataCellId] int NOT NULL IDENTITY,
+    [TableDataRowId] int NOT NULL,
+    [TableColumnId] int NOT NULL,
+    [Value] nvarchar(max) NOT NULL,
+    CONSTRAINT [PK_TableDataCells] PRIMARY KEY ([TableDataCellId]),
+    CONSTRAINT [FK_TableDataCells_TableColumns_TableColumnId] FOREIGN KEY ([TableColumnId]) REFERENCES [TableColumns] ([TableColumnId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_TableDataCells_TableDataRows_TableDataRowId] FOREIGN KEY ([TableDataRowId]) REFERENCES [TableDataRows] ([TableDataRowId]) ON DELETE NO ACTION
+);
+2025-06-17 18:01:47.710 +05:30 [INF] Executed DbCommand (227ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'OrgUnitId', N'Name', N'ParentId', N'TemplateSourceId') AND [object_id] = OBJECT_ID(N'[OrgUnits]'))
+    SET IDENTITY_INSERT [OrgUnits] ON;
+INSERT INTO [OrgUnits] ([OrgUnitId], [Name], [ParentId], [TemplateSourceId])
+VALUES (1000, N'KVK Template', NULL, NULL),
+(2000, N'Farmers Training Institute (FTI)', NULL, NULL),
+(3000, N'Staff Training Unit (STU)', NULL, NULL),
+(4000, N'Farm Information Unit (FIU)', NULL, NULL),
+(5000, N'Institute of Baking Technology & Value Addition (IBT&VA)', NULL, NULL),
+(6000, N'Agricultural Technology Information Centre (ATIC)', NULL, NULL),
+(7000, N'Distance Education Unit (DEU)', NULL, NULL),
+(8000, N'Agricultural Sciences Museum (ASM)', NULL, NULL),
+(9000, N'National Agriculture Extension Project (NAEP)', NULL, NULL),
+(9500, N'Extension Education Unit (EEU)', NULL, NULL),
+(3001, N'SAMETI – DESI Programme', 3000, NULL);
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'OrgUnitId', N'Name', N'ParentId', N'TemplateSourceId') AND [object_id] = OBJECT_ID(N'[OrgUnits]'))
+    SET IDENTITY_INSERT [OrgUnits] OFF;
+2025-06-17 18:01:47.753 +05:30 [INF] Executed DbCommand (42ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableDefinitionId', N'DisplayOrder', N'OrgUnitId', N'Title') AND [object_id] = OBJECT_ID(N'[TableDefinitions]'))
+    SET IDENTITY_INSERT [TableDefinitions] ON;
+INSERT INTO [TableDefinitions] ([TableDefinitionId], [DisplayOrder], [OrgUnitId], [Title])
+VALUES (1101, 1, 1000, N'1. OFT'),
+(1102, 2, 1000, N'2. FLD'),
+(1103, 3, 1000, N'3. On-Campus Training Programs Conducted'),
+(1104, 4, 1000, N'4. Off-Campus Training Programs Conducted'),
+(1321, 321, 1000, N'32.1 Short Messages'),
+(1322, 322, 1000, N'32.2 Expert Center'),
+(1323, 323, 1000, N'32.3 Other E‑KVK Activities'),
+(1400, 400, 1000, N'40. Any Other Story'),
+(2101, 1, 2000, N'Training Programmes Organized'),
+(2102, 2, 2000, N'Any Other Activities'),
+(3101, 1, 3000, N'Training Programmes Organized'),
+(3102, 2, 3000, N'Sponsored Training Programmes Organized'),
+(3103, 3, 3000, N'Any Other Activities'),
+(4101, 1, 4000, N'Activities / Programmes'),
+(5101, 1, 5000, N'Programmes Organized'),
+(5102, 2, 5000, N'Any Other Activities'),
+(6101, 1, 6000, N'Advisory Services'),
+(6102, 2, 6000, N'Sale of Inputs / Plant Materials'),
+(6103, 3, 6000, N'Any Other Activities'),
+(7101, 1, 7000, N'Diploma Courses'),
+(7102, 2, 7000, N'Certificate Courses'),
+(7103, 3, 7000, N'Any Other Activities'),
+(8101, 1, 8000, N'Museum Visits'),
+(9101, 1, 9000, N'Extension Programmes'),
+(9511, 1, 9500, N'OFT (On‑Farm Trials)'),
+(9512, 2, 9500, N'FLD (Frontline Demonstrations)'),
+(9513, 3, 9500, N'Training Programmes Organized');
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableDefinitionId', N'DisplayOrder', N'OrgUnitId', N'Title') AND [object_id] = OBJECT_ID(N'[TableDefinitions]'))
+    SET IDENTITY_INSERT [TableDefinitions] OFF;
+2025-06-17 18:01:47.842 +05:30 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableColumnId', N'DataType', N'Name', N'Position', N'TableDefinitionId') AND [object_id] = OBJECT_ID(N'[TableColumns]'))
+    SET IDENTITY_INSERT [TableColumns] ON;
+INSERT INTO [TableColumns] ([TableColumnId], [DataType], [Name], [Position], [TableDefinitionId])
+VALUES (110101, 0, N'Title', 1, 1101),
+(110102, 0, N'Crop', 2, 1101),
+(110103, 5, N'Area(ha)', 3, 1101),
+(110104, 1, N'NoOfTrials_Male_SC/ST', 4, 1101),
+(110105, 1, N'NoOfTrials_Male_Gen', 5, 1101),
+(110106, 1, N'NoOfTrials_Female_SC/ST', 6, 1101),
+(110107, 1, N'NoOfTrials_Female_Gen', 7, 1101),
+(110108, 5, N'Yield(q/ha)_Y1', 8, 1101),
+(110109, 5, N'Yield(q/ha)_Y2', 9, 1101),
+(110110, 5, N'%IncreaseOverT2', 10, 1101),
+(110201, 0, N'Title', 1, 1102),
+(110202, 0, N'Crop', 2, 1102),
+(110203, 5, N'Area(ha)', 3, 1102),
+(110204, 1, N'NoOfTrials_Male_SC/ST', 4, 1102),
+(110205, 1, N'NoOfTrials_Male_Gen', 5, 1102),
+(110206, 1, N'NoOfTrials_Female_SC/ST', 6, 1102),
+(110207, 1, N'NoOfTrials_Female_Gen', 7, 1102),
+(110208, 5, N'Yield(q/ha)_Y1', 8, 1102),
+(110209, 5, N'Yield(q/ha)_Y2', 9, 1102),
+(110210, 5, N'%IncreaseOverT2', 10, 1102),
+(110301, 3, N'Date', 1, 1103),
+(110302, 0, N'Title', 2, 1103),
+(110303, 0, N'Thematic area*', 3, 1103),
+(110304, 0, N'Type**', 4, 1103),
+(110305, 1, N'NoOfTrials_Male_SC/ST', 5, 1103),
+(110306, 1, N'NoOfTrials_Male_Gen', 6, 1103),
+(110307, 1, N'NoOfTrials_Female_SC/ST', 7, 1103),
+(110308, 1, N'NoOfTrials_Female_Gen', 8, 1103),
+(110401, 3, N'Date', 1, 1104),
+(110402, 0, N'Title', 2, 1104),
+(110403, 0, N'Thematic area*', 3, 1104),
+(110404, 0, N'Type**', 4, 1104),
+(110405, 0, N'Village/Taluk', 5, 1104),
+(110406, 1, N'NoOfTrials_Male_SC/ST', 6, 1104),
+(110407, 1, N'NoOfTrials_Male_Gen', 7, 1104),
+(110408, 1, N'NoOfTrials_Female_SC/ST', 8, 1104),
+(110409, 1, N'NoOfTrials_Female_Gen', 9, 1104),
+(132101, 1, N'SlNo', 1, 1321),
+(132102, 0, N'Message', 2, 1321),
+(132103, 0, N'Category', 3, 1321),
+(132201, 3, N'Date', 1, 1322),
+(132202, 0, N'ParticipatingCenter', 2, 1322);
+INSERT INTO [TableColumns] ([TableColumnId], [DataType], [Name], [Position], [TableDefinitionId])
+VALUES (132203, 0, N'Purpose', 3, 1322),
+(132301, 0, N'Details', 1, 1323),
+(140001, 0, N'Story', 1, 1400),
+(210101, 1, N'SlNo', 1, 2101),
+(210102, 0, N'SponsoredOrganization', 2, 2101),
+(210103, 0, N'TrainingTitle', 3, 2101),
+(210104, 3, N'Date', 4, 2101),
+(210105, 0, N'Duration', 5, 2101),
+(210106, 1, N'NoOfTrainings', 6, 2101),
+(210107, 1, N'NoOfParticipants', 7, 2101),
+(210201, 0, N'Details', 1, 2102),
+(310101, 1, N'SlNo', 1, 3101),
+(310102, 0, N'TrainingTitle', 2, 3101),
+(310103, 0, N'DateAndPlace', 3, 3101),
+(310104, 0, N'Duration', 4, 3101),
+(310105, 1, N'NoOfTrainings', 5, 3101),
+(310106, 1, N'NoOfParticipants', 6, 3101),
+(310201, 1, N'SlNo', 1, 3102),
+(310202, 0, N'SponsoredOrganization', 2, 3102),
+(310203, 0, N'TrainingTitle', 3, 3102),
+(310204, 0, N'DateAndPlace', 4, 3102),
+(310205, 0, N'Duration', 5, 3102),
+(310206, 1, N'NoOfTrainings', 6, 3102),
+(310207, 1, N'NoOfParticipants', 7, 3102),
+(310301, 0, N'Details', 1, 3103),
+(410101, 1, N'SlNo', 1, 4101),
+(410102, 0, N'ActivityType', 2, 4101),
+(410103, 1, N'Number', 3, 4101),
+(510101, 1, N'SlNo', 1, 5101),
+(510102, 0, N'TrainingDetails', 2, 5101),
+(510103, 1, N'Number', 3, 5101),
+(510104, 1, N'NoOfProgramme', 4, 5101),
+(510105, 0, N'DateAndPlace', 5, 5101),
+(510106, 0, N'Duration', 6, 5101),
+(510107, 1, N'NoOfParticipants', 7, 5101),
+(510201, 0, N'Details', 1, 5102),
+(610101, 1, N'SlNo', 1, 6101),
+(610102, 0, N'ServiceType', 2, 6101),
+(610103, 1, N'Nos', 3, 6101),
+(610104, 1, N'NoOfBeneficiaries', 4, 6101),
+(610201, 1, N'SlNo', 1, 6102),
+(610202, 0, N'InputDetails', 2, 6102);
+INSERT INTO [TableColumns] ([TableColumnId], [DataType], [Name], [Position], [TableDefinitionId])
+VALUES (610203, 0, N'Quantity', 3, 6102),
+(610204, 2, N'Amount', 4, 6102),
+(610301, 0, N'Details', 1, 6103),
+(710101, 0, N'CourseName', 1, 7101),
+(710102, 1, N'CandidatesAdmitted', 2, 7101),
+(710103, 1, N'AttendedExam', 3, 7101),
+(710104, 1, N'Passed', 4, 7101),
+(710201, 0, N'CourseName', 1, 7102),
+(710202, 1, N'CandidatesAdmitted', 2, 7102),
+(710203, 1, N'AttendedExam', 3, 7102),
+(710204, 1, N'Passed', 4, 7102),
+(710301, 0, N'Details', 1, 7103),
+(810101, 0, N'InstitutionName', 1, 8101),
+(810102, 3, N'DateOfVisit', 2, 8101),
+(810103, 1, N'NoOfVisitors', 3, 8101),
+(910101, 0, N'Particulars', 1, 9101),
+(910102, 3, N'Date', 2, 9101),
+(910103, 0, N'Place', 3, 9101),
+(910104, 1, N'NoOfProgrammes', 4, 9101),
+(910105, 1, N'NoOfParticipants', 5, 9101),
+(951101, 0, N'Title', 1, 9511),
+(951102, 0, N'Crop', 2, 9511),
+(951103, 0, N'Area', 3, 9511),
+(951104, 1, N'Trials_SC_Male', 4, 9511),
+(951105, 1, N'Trials_SC_Female', 5, 9511),
+(951106, 1, N'Trials_ST_Male', 6, 9511),
+(951107, 1, N'Trials_ST_Female', 7, 9511),
+(951108, 1, N'Trials_General_Male', 8, 9511),
+(951109, 1, N'Trials_General_Female', 9, 9511),
+(951110, 2, N'Yield_T1', 10, 9511),
+(951111, 2, N'Yield_T2', 11, 9511),
+(951112, 2, N'%IncreaseOverT2', 12, 9511),
+(951201, 0, N'Title', 1, 9512),
+(951202, 0, N'Crop', 2, 9512),
+(951203, 0, N'Area', 3, 9512),
+(951204, 1, N'Trials_SC_Male', 4, 9512),
+(951205, 1, N'Trials_SC_Female', 5, 9512),
+(951206, 1, N'Trials_ST_Male', 6, 9512),
+(951207, 1, N'Trials_ST_Female', 7, 9512),
+(951208, 1, N'Trials_General_Male', 8, 9512),
+(951209, 1, N'Trials_General_Female', 9, 9512),
+(951210, 2, N'Yield_Demo', 10, 9512);
+INSERT INTO [TableColumns] ([TableColumnId], [DataType], [Name], [Position], [TableDefinitionId])
+VALUES (951211, 2, N'Yield_Check', 11, 9512),
+(951212, 2, N'%IncreaseOverCheck', 12, 9512),
+(951301, 1, N'SlNo', 1, 9513),
+(951302, 0, N'Title', 2, 9513),
+(951303, 3, N'Date', 3, 9513),
+(951304, 0, N'Duration', 4, 9513),
+(951305, 1, N'NoOfProgrammes', 5, 9513),
+(951306, 1, N'NoOfParticipants', 6, 9513);
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableColumnId', N'DataType', N'Name', N'Position', N'TableDefinitionId') AND [object_id] = OBJECT_ID(N'[TableColumns]'))
+    SET IDENTITY_INSERT [TableColumns] OFF;
+2025-06-17 18:01:47.864 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableDefinitionId', N'DisplayOrder', N'OrgUnitId', N'Title') AND [object_id] = OBJECT_ID(N'[TableDefinitions]'))
+    SET IDENTITY_INSERT [TableDefinitions] ON;
+INSERT INTO [TableDefinitions] ([TableDefinitionId], [DisplayOrder], [OrgUnitId], [Title])
+VALUES (3201, 1, 3001, N'DESI Programme'),
+(3202, 2, 3001, N'Any Other Activities');
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableDefinitionId', N'DisplayOrder', N'OrgUnitId', N'Title') AND [object_id] = OBJECT_ID(N'[TableDefinitions]'))
+    SET IDENTITY_INSERT [TableDefinitions] OFF;
+2025-06-17 18:01:47.884 +05:30 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableColumnId', N'DataType', N'Name', N'Position', N'TableDefinitionId') AND [object_id] = OBJECT_ID(N'[TableColumns]'))
+    SET IDENTITY_INSERT [TableColumns] ON;
+INSERT INTO [TableColumns] ([TableColumnId], [DataType], [Name], [Position], [TableDefinitionId])
+VALUES (320101, 1, N'SlNo', 1, 3201),
+(320102, 0, N'Place', 2, 3201),
+(320103, 0, N'NodalTrainingInstitute', 3, 3201),
+(320104, 1, N'NoOfBatch', 4, 3201),
+(320105, 1, N'NoOfInputDealers', 5, 3201),
+(320201, 0, N'Details', 1, 3202);
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'TableColumnId', N'DataType', N'Name', N'Position', N'TableDefinitionId') AND [object_id] = OBJECT_ID(N'[TableColumns]'))
+    SET IDENTITY_INSERT [TableColumns] OFF;
+2025-06-17 18:01:47.928 +05:30 [INF] Executed DbCommand (44ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrgUnits_ParentId] ON [OrgUnits] ([ParentId]);
+2025-06-17 18:01:47.937 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_OrgUnits_TemplateSourceId] ON [OrgUnits] ([TemplateSourceId]);
+2025-06-17 18:01:47.940 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_RefreshTokens_FK_UserId] ON [RefreshTokens] ([FK_UserId]);
+2025-06-17 18:01:47.954 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableColumns_TableDefinitionId] ON [TableColumns] ([TableDefinitionId]);
+2025-06-17 18:01:47.956 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDataCells_TableColumnId] ON [TableDataCells] ([TableColumnId]);
+2025-06-17 18:01:47.959 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDataCells_TableDataRowId] ON [TableDataCells] ([TableDataRowId]);
+2025-06-17 18:01:47.961 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDataRows_OrgUnitId] ON [TableDataRows] ([OrgUnitId]);
+2025-06-17 18:01:47.992 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDataRows_TableDefinitionId] ON [TableDataRows] ([TableDefinitionId]);
+2025-06-17 18:01:47.995 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDataRows_TrainerId] ON [TableDataRows] ([TrainerId]);
+2025-06-17 18:01:48.008 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TableDefinitions_OrgUnitId] ON [TableDefinitions] ([OrgUnitId]);
+2025-06-17 18:01:48.012 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Assignment_Active] ON [TrainerUnitAssignments] ([UserId], [OrgUnitId], [UnassignedOn]);
+2025-06-17 18:01:48.016 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_TrainerUnitAssignments_OrgUnitId] ON [TrainerUnitAssignments] ([OrgUnitId]);
+2025-06-17 18:01:48.020 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20250617123134_Inital', N'9.0.5');
+2025-06-17 18:01:48.033 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result

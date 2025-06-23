@@ -2,12 +2,16 @@
 {
     public class TrainerUnitAssignment
     {
-        public int Id { get; set; }
+        [Key] 
+        public int TrainerUnitAssignmentId { get; set; }
+
         public int UserId { get; set; }
-        public User Trainer { get; set; }
-        public int UnitId { get; set; }
-        public Unit Unit { get; set; }
-        // Additional properties can be added here if needed
-        // For example, you might want to track the date of assignment or status
+        public User User { get; set; } = null!;            // MUST have Role = Trainer
+
+        public int OrgUnitId { get; set; }
+        public OrgUnit OrgUnit { get; set; } = null!;
+
+        public DateTime AssignedOn { get; set; } = DateTime.UtcNow;
+        public DateTime? UnassignedOn { get; set; }
     }
 }
