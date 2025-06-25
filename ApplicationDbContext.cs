@@ -74,6 +74,12 @@ namespace GKVK_Api
               .HasForeignKey(r => r.TableDefinitionId)
               .OnDelete(DeleteBehavior.Cascade); // this is fine
 
+
+            mb.Entity<User>()
+                .Property(u => u.Role)
+                .HasConversion<string>();
+                
+
             // User ⇄ TableDataRow
             mb.Entity<User>()
               .HasMany(u => u.CreatedRows)
