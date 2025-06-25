@@ -6,7 +6,9 @@
         public int InstituteId { get; set; }
 
         [Required, MaxLength(150)]
-        public string Name { get; set; } = null!;
+        public string InstituteName { get; set; } 
+
+        public string InstituteLogo { get; set; }
 
         //Optional Metadata
         public string? Address { get; set; }

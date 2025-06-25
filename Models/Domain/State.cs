@@ -5,7 +5,7 @@
         [Key]
         public int StateId { get; set; }
         [Required]
-        public string Name { get; set; } = null!;
+        public string StateName { get; set; }
 
         public ICollection<District> Districts { get; set; } = new List<District>();
     }

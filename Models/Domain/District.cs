@@ -5,10 +5,10 @@
         [Key]
         public int DistrictId { get; set; }
         [Required]
-        public string Name { get; set; } = null!;
+        public string DistrictName { get; set; } = null!;
 
         //FK to state
-        public int StateId { get; set; }
+        public int FK_StateId { get; set; }
         public State State { get; set; } = null!;
 
         //Reverse nav to the orgunits that are live in the district
